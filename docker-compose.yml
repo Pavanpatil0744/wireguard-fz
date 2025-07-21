@@ -1,0 +1,42 @@
+version: "3.9"
+
+services:
+  caddy:
+    image: caddy:latest
+    container_name: caddy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - firezone
+    restart: unless-stopped
+    env_file:
+      - container-vars.env
+
+  firezone:
+    image: firezone/firezone:latest
+    container_name: firezone
+    env_file:
+      - container-vars.env
+      - container-vars-postgres.env
+    depends_on:
+      - firezone-postgres
+    restart: unless-stopped
+
+  firezone-postgres:
+    image: postgres:15
+    container_name: firezone-postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    env_file:
+      - container-vars-postgres.env
+    restart: unless-stopped
+
+volumes:
+  caddy_data:
+  caddy_config:
+  postgres_data:

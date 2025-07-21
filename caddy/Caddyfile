@@ -1,0 +1,3 @@
+vpn.yourdomain.com {
+  reverse_proxy firezone:13000
+}
